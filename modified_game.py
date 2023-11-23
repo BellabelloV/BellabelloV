@@ -1,4 +1,6 @@
 import random
+from datetime import datetime
+
 """ 
 High school students typically face boredom and
 restlessness during the waiting period in class 
@@ -14,6 +16,7 @@ stimulation during these brief waiting intervals.
 
 #Game History file name Data
 all_time_records_file_name = "attempts"
+number_of_chances_for_game = 5
 
 #instrunction or guid for difficulty
 difficulty_instructions = '''
@@ -73,13 +76,13 @@ def generate_secret_number_to_guess(selected_difficulty):
 def result_check(player_guess,secret_number,difficulty_range=""):
     start, end = split_text_to_integers(difficulty_range)
     if not (start <= player_guess <= end):
-        return f"Please guess a number between {start} and {end}", False
+        return f"Enter your guess between {start} and {end}", False
     elif player_guess == secret_number:
         return f"Congratulations! You guessed right. The answer is {player_guess}!", True
     elif player_guess < secret_number:# if the guess is not as spected, hint is provided
-        return "Too low. Go higher!.", False
+        return "Hint: The secret number is greater than your guess.", False
     else:
-        return "Too, high!  Go lower!", False
+        return "Hint: The secret number is less than your guess.", False
 
 #Ask if player wnats to play again
 def ask_to_play_again():
@@ -90,7 +93,7 @@ def ask_to_play_again():
 
 #Guess game 
 def guess_game(selected_difficulty,difficulty_range):
-    max_attempts = 5
+    max_attempts = number_of_chances_for_game
     player_guesses = []
     end_game = False
     secret_number = generate_secret_number_to_guess(selected_difficulty)
@@ -102,8 +105,11 @@ def guess_game(selected_difficulty,difficulty_range):
         result, end_game = result_check(player_guess, secret_number,difficulty_range)
         print(result)
         max_attempts -= 1
+    if max_attempts == 0:
+        print(f"Sorry you ran out of attempts. The correct number is {secret_number}")
     return player_guesses
 
+#Ask user to see all their guesses
 def view_guesses():
     result = input("Would you like to view all the answers you guessed? (yes/no)")
     if result == "yes":
@@ -112,8 +118,10 @@ def view_guesses():
     return False
 
 #write data to file    
-def write_data_to_file(attempts, filename):
+def write_data_to_file(attempts, filename, title):
+    current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     with open(filename,"a") as file:
+        file.write(f"\nAttempt N0: {title} @ {current_time}\n")
         for attempt in attempts:
             file.write(f"{attempt}\n")
 
@@ -130,12 +138,15 @@ def read_data_from_file(file_path):
 #Run Game play sequence   
 def game_play():
     continue_game = True
+    number_of_times_user_played_game = 1
     while continue_game:
         game_difficulty, difficulty_range = select_game_difficulty()
         player_guesses = guess_game(game_difficulty,difficulty_range)
-        #Record game results
-        write_data_to_file(player_guesses,all_time_records_file_name)
         continue_game,message = ask_to_play_again()
+        #Record game results
+        write_data_to_file(player_guesses,all_time_records_file_name,number_of_times_user_played_game)
+        if continue_game:
+            number_of_times_user_played_game += 1
     view_guesses()
     print(message)
     
