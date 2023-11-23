@@ -12,12 +12,17 @@ second, it promotes engagement and cerebral
 stimulation during these brief waiting intervals. 
 """
 
+#Game History file name Data
+all_time_records_file_name = "attempts"
+
 #instrunction or guid for difficulty
 difficulty_instructions = '''
+
 Select your difficulty level:
         1 - Easy (1-10)
         2 - Medium (11-40)
-        3 - Hard (41-80)'''
+        3 - Hard (41-80)
+        '''
 
 #split text range into integers
 def split_text_to_integers(text):
@@ -45,7 +50,7 @@ def select_game_difficulty():
     print(difficulty_instructions)
     execute = True
     while execute:
-        selected_difficulty = int(input("Enter the difficulty level of choice: "))
+        selected_difficulty = int(input("\nEnter the difficulty level of choice: "))
         result, message = verify_difficulty_selected(selected_difficulty)
         if result:
             execute = False
@@ -86,23 +91,52 @@ def ask_to_play_again():
 #Guess game 
 def guess_game(selected_difficulty,difficulty_range):
     max_attempts = 5
-    count = 0
+    player_guesses = []
     end_game = False
     secret_number = generate_secret_number_to_guess(selected_difficulty)
     
-    while count < max_attempts and not end_game:
-        player_guess = int(input(f"Guess an number in the range {difficulty_range}: "))
+    while max_attempts > 0 and not end_game:
+        print(f"\n{max_attempts} chance(s) remaining")
+        player_guess = int(input(f"Guess a number in the range {difficulty_range}: "))
+        player_guesses.append(player_guess)
         result, end_game = result_check(player_guess, secret_number,difficulty_range)
         print(result)
-        count += 1
-    
+        max_attempts -= 1
+    return player_guesses
+
+def view_guesses():
+    result = input("Would you like to view all the answers you guessed? (yes/no)")
+    if result == "yes":
+        read_data_from_file(all_time_records_file_name)
+        return True
+    return False
+
+#write data to file    
+def write_data_to_file(attempts, filename):
+    with open(filename,"a") as file:
+        for attempt in attempts:
+            file.write(f"{attempt}\n")
+
+def read_data_from_file(file_path):
+    # Open the file in read mode
+    with open(file_path, 'r') as file:
+        # Read the content of the file
+        file_content = file.read()
+
+        # Print the content to the console
+        print("File Content:")
+        print(file_content)
+
 #Run Game play sequence   
 def game_play():
     continue_game = True
     while continue_game:
         game_difficulty, difficulty_range = select_game_difficulty()
-        guess_game(game_difficulty,difficulty_range)
+        player_guesses = guess_game(game_difficulty,difficulty_range)
+        #Record game results
+        write_data_to_file(player_guesses,all_time_records_file_name)
         continue_game,message = ask_to_play_again()
+    view_guesses()
     print(message)
     
 if __name__=="__main__":    
