@@ -55,9 +55,6 @@ def get_secret_num(level):
         return None# end the game if the wrong level is inputed
 #  this function initiates the play of the guessing game
 
-intructions = "Hello Welcome to the Range Guessing Game. \n
- + "To start, please select your difficulty level by entering either 1,2 or 3."
-
 def begin_guess():
     max_attempt = 5  # game is expected to stop after 5  maximum attempts
 
