@@ -79,7 +79,7 @@ def result_check(player_guess,secret_number,difficulty_range=""):
         return f"Enter your guess between {start} and {end}", False
     elif player_guess == secret_number:
         return f"Congratulations! You guessed right. The answer is {player_guess}!", True
-    elif player_guess < secret_number:# if the guess is not as spected, hint is provided
+    elif player_guess < secret_number:
         return "Hint: The secret number is greater than your guess.", False
     else:
         return "Hint: The secret number is less than your guess.", False
@@ -91,7 +91,7 @@ def ask_to_play_again():
         return True, ""
     return False, "Goodbye, Thanks for playing!!"
 
-#Guess game 
+#Guess game procedure 
 def guess_game(selected_difficulty,difficulty_range):
     max_attempts = number_of_chances_for_game
     player_guesses = []
@@ -106,7 +106,7 @@ def guess_game(selected_difficulty,difficulty_range):
         print(result)
         max_attempts -= 1
     if max_attempts == 0:
-        print(f"Sorry you ran out of attempts. The correct number is {secret_number}")
+        print(f"Sorry you ran out of attempts. The correct number is {secret_number}\n")
     return player_guesses
 
 #Ask user to see all their guesses
@@ -125,6 +125,7 @@ def write_data_to_file(attempts, filename, title):
         for attempt in attempts:
             file.write(f"{attempt}\n")
 
+#Read data from file
 def read_data_from_file(file_path):
     # Open the file in read mode
     with open(file_path, 'r') as file:
