@@ -19,6 +19,11 @@ Select your difficulty level:
         2 - Medium (11-40)
         3 - Hard (41-80)'''
 
+#split text range into integers
+def split_text_to_integers(text):
+    start,end = map(int, text.split('-'))
+    return start, end
+
 # return range based on difficulty
 def range_selector(selected_difficulty):
     if selected_difficulty == 1:
@@ -40,7 +45,7 @@ def select_game_difficulty():
     print(difficulty_instructions)
     execute = True
     while execute:
-        selected_difficulty = int(input("Enter the level of choice: "))
+        selected_difficulty = int(input("Enter the difficulty level of choice: "))
         result, message = verify_difficulty_selected(selected_difficulty)
         if result:
             execute = False
@@ -60,13 +65,16 @@ def generate_secret_number_to_guess(selected_difficulty):
         return 0
     
 #check the number guessed by the player
-def result_check(player_guess,secret_number):
-    if player_guess == secret_number:
+def result_check(player_guess,secret_number,difficulty_range=""):
+    start, end = split_text_to_integers(difficulty_range)
+    if not (start <= player_guess <= end):
+        return f"Please guess a number between {start} and {end}", False
+    elif player_guess == secret_number:
         return f"Congratulations! You guessed right. The answer is {player_guess}!", True
     elif player_guess < secret_number:# if the guess is not as spected, hint is provided
-        return "Too low. Try another attempt!.", False
+        return "Too low. Go higher!.", False
     else:
-        return "Too, high!  Try another attempt!", False
+        return "Too, high!  Go lower!", False
 
 #Ask if player wnats to play again
 def ask_to_play_again():
@@ -84,7 +92,7 @@ def guess_game(selected_difficulty,difficulty_range):
     
     while count < max_attempts and not end_game:
         player_guess = int(input(f"Guess an number in the range {difficulty_range}: "))
-        result, end_game = result_check(player_guess, secret_number)
+        result, end_game = result_check(player_guess, secret_number,difficulty_range)
         print(result)
         count += 1
     
